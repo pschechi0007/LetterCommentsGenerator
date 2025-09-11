@@ -1,0 +1,315 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Letter Comments Generator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #e8f5e9, #c8e6c9);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-size: 14px;
+    }
+    .container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 14px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      max-width: 640px;
+      width: 80%;
+      animation: fadeIn 1s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2e7d32;
+      font-size: 20px;
+    }
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+      color: #1b5e20;
+    }
+    select, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 16px;
+      border-radius: 8px;
+      border: 1px solid #a5d6a7;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    select:focus, textarea:focus, button:focus {
+      outline: none;
+      border-color: #66bb6a;
+      box-shadow: 0 0 4px rgba(102, 187, 106, 0.5);
+    }
+    textarea {
+      height: 180px;
+      font-family: monospace;
+      white-space: pre;
+      resize: none;
+      background-color: #f1f8e9;
+    }
+    button {
+      background-color: #43a047;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #2e7d32;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Letter Comments Generator</h2>
+    <label for="letterSelect">Select Scenario:</label>
+    <select id="letterSelect" onchange="updateComment()">
+      <option value="">-Select-</option>
+      <option value="Appeal Request">Appeal Request</option>
+      <option value="Below $25.00">Below $25.00</option>
+      <option value="Claim Processed Correctly (Institutional)">Claim Processed Correctly (Institutional)</option>
+      <option value="Claim Processed Correctly (Professional)">Claim Processed Correctly (Professional)</option>
+      <option value="Corrected Claim">Corrected Claim</option>
+      <option value="Correction Request Without Corrected Claim Form">Correction Request Without Corrected Claim Form</option>
+      <option value="D25 Denial">D25 Denial</option>
+      <option value="D25/D26/D27">D25/D26/D27</option>
+      <option value="EMO Edit">EMO Edit</option>
+      <option value="ENM Edit">ENM Edit</option>
+      <option value="Extenuating Circumstance">Extenuating Circumstance</option>
+      <option value="Grace Period">Grace Period</option>
+      <option value="Itemization Bill">Itemization Bill</option>
+      <option value="J39 Edit">J39 Edit</option>
+      <option value="Late Call Panelty">Late Call Panelty</option>
+      <option value="Look Back Period">Look Back Period</option>
+      <option value="NDC Issues:">NDC Issues:</option>
+      <option value="No Claim Found">No Claim Found</option>
+      <option value="No EOB">No EOB</option>
+      <option value="No EOMB">No EOMB</option>
+      <option value="No Eligibility">No Eligibility</option>
+      <option value="Not Medically Necessary">Not Medically Necessary</option>
+      <option value="PAM Letter">PAM Letter</option>
+      <option value="Procedure Processed Correctly (Request for Particular CPT Code)">Procedure Processed Correctly (Request for Particular CPT Code)</option>
+      <option value="Recently Processed to Deductible">Recently Processed to Deductible</option>
+      <option value="Recently Processed to Payment">Recently Processed to Payment</option>
+      <option value="Records Request">Records Request</option>
+      <option value="Requesting Referral/Authorization (00182)">Requesting Referral/Authorization (00182)</option>
+      <option value="SFR Edit">SFR Edit</option>
+      <option value="Services Not Covered (NPAR)">Services Not Covered (NPAR)</option>
+      <option value="Services Not Covered (PAR)">Services Not Covered (PAR)</option>
+      <option value="Timely Filing">Timely Filing</option>
+    </select>
+
+    <label for="commentBox">Letter Comments:</label>
+    <textarea id="commentBox" readonly></textarea>
+    <button onclick="copyToClipboard()">Copy to Clipboard</button>
+  </div>
+
+  <script>
+    const comments = {
+      "Appeal Request": `Please be advised that we received your request. As per review
+from our dedicated department, claim denied correctly as not
+covered clinical review no other exception found to pay the
+claim. Please submit valid formal Appeal for further process.`,
+      "Below $25.00": `Please be advised that we received your request. As per review
+from our dedicated department, overpaid amount is below $25.00
+threshold. Please submit a voluntary refund request to further
+process.`,
+      "Claim Processed Correctly (Institutional)": `Please be advised that we received inquiry you have submitted
+for the claim XXXXXXXXXXX. As per review, the claim has been
+processed correctly according to the contractual rates
+presently listed in our system for your facility. If you still
+disagree with this pricing, please contact your provider
+representative.`,
+      "Claim Processed Correctly (Professional)": `Please be advised that we received inquiry you have submitted
+for the claim XXXXXXXXXX. As per review, the claim has been
+processed correctly according to the contractual rates
+presently listed in our system for your office. If you still
+disagree with this pricing, please contact your provider
+representative.`,
+      "Corrected Claim": `Please be advised that we received your medical records. As per
+review from our dedicated department, the claim was XXXXXXXXXXX
+denied correctly. Kindly submit a corrected claim for further
+processing.`,
+      "Correction Request Without Corrected Claim Form": `Please be advised that we received correction request you have
+submitted for the claim XXXXXXXXXXX. Please be advised that if
+you are resubmitting a corrected claim, it should show exactly
+how you want the claim to be processed and how you would like
+the claim to be billed. It should include all the lines billed
+on the claim and not only the correction. Also, it is necessary
+to have a stamp, note, or letter to serve as a proof that the
+submitted claim is a corrected claim. Lastly, kindly indicate
+as to what claim the correction should be applied to.`,
+      "D25 Denial": `Please be advised that we received your medical records. As per
+review from our dedicated department, procedure code XXXXX was
+denied because it is considered to be part of another service
+already performed and reimbursed. Kindly submit a corrected
+claim for further processing.`,
+      "D25/D26/D27": `Please be advised that we received your medical records. As per
+review from our dedicated department, Procedure code XXXXX was
+denied as service is denied because it is considered to be part
+of another service already performed and reimbursed. Kindly
+submit a corrected claim for further processing.`,
+      "EMO Edit": `Please be advised that we received your request. As per review
+from our dedicated department, the claim denied as this is not
+a covered expense of the patient's plan.`,
+      "ENM Edit": `Please be advised that we received your medical records. As per
+review, there is no institutional claim billed with emergency
+service revenue code. Kindly submit institutional claim for
+further adjustment.`,
+      "Extenuating Circumstance": `Please be advised that we received records you have submitted
+for the claim XXXXXXXXXXX. As per our dedicated department, the
+submitted medical records does not meet extenuating
+circumstance as to why authorization was not obtained. Please
+resubmit the records and above mentioned for the claim to be
+further processed.`,
+      "Grace Period": `Please be advised that we received the inquiry you have
+submitted for the claim XXXXXXXXXXX. As per review, the claim
+was denied because the policy holder's premium not paid to
+date.`,
+      "Itemization Bill": `Please be advised that we received your inquiry request for the
+claim. As per the review from our dedicated department, we need
+valid itemized bill for further processing of the claim. Kindly
+resubmit the claim or a valid itemized bill for further review.`,
+      "J39 Edit": `Please be advised that we received your medical records. As per
+review from our dedicated department, claim was correctly
+denied for referral. Kindly submit a valid referral for further
+processing. If you still disagree with this denial, please
+contact your provider representative.`,
+      "Late Call Panelty": `Please be advised that we received records you have submitted
+for the claim XXXXXXXXXXX. As per review, the claim was denied
+as some services require pre-authorization. A penalty may be
+applied if those services are not authorized first. This amount
+is provider's responsibility.`,
+      "Look Back Period": `Please be advised that we received your medical records. As per
+review from our dedicated department, we are unable to process
+this request because it has exceeded the timeframe allowed for
+reprocessing which is XX months from the date claim was last
+processed on MM/DD/YYYY. Leadership approval is needed for the
+commercial operations timeliness of filing approval, in order
+to review the adjustment request.`,
+      "NDC Issues:": `Please be advised that we received records you submitted for
+the claim XXXXXXXXXXX. As per review from our dedicated
+department, procedure code XXXXX is denied as one or more of
+the fields related to the National Drug Code (NDC) number,
+units or quantity is missing, incomplete or invalid. Kindly
+submit corrected claim and NDC (National drug code) for further
+processing.`,
+      "No Claim Found": `Please be advised that we received Medical records you have
+submitted. As per review, we are unable to find the claim for
+the given date of service MM/DD/YYYY and MM/DD/YYYY with total
+charges $00.00. Please send us valid claim details or claim
+form for us to further process your request.`,
+      "No EOB": `Please be advised that we received records you have submitted
+for the claim XXXXXXXXXXX. As per review, the claim was denied
+correctly as this member is eligible for health care benefits
+with another health insurance carrier. There is no explanation
+of benefits submitted. Please send a copy of the other
+carrier's explanation of benefits that corresponds with this
+charge, along with this explanation of benefits for further
+processing of the claim.`,
+      "No EOMB": `Please be advised that we received records you have submitted
+for the claim XXXXXXXXXXX.As per review, the claim was denied
+correctly as our records indicate that the patient is covered
+by Medicare. There is no Medicare explanation of benefits
+submitted. Please submit a valid Medicare Explanation of
+Benefits for further processing of the claim.`,
+      "No Eligibility": `Please be advised that we received your request. As per review
+from our dedicated department, claim denied correctly and no
+exception found to pay the claim. The patient was not an
+eligible member at the time services were rendered If you still
+disagree with this, please contact your provider
+representative.`,
+      "Not Medically Necessary": `Please be advised that we received records you have submitted
+for the claim XXXXXXXXXXX. As per review, the claim was denied
+correctly as not medically necessary as per authorization case
+number UMXXXXXXX. In order to further review the claim, kindly
+submit the documents along with a Formal Appeal.`,
+      "PAM Letter": `Thank you for your inquiry. Kindly submit the medical records
+for the services billed on this claim to American Imaging
+Management (AIM) Specialty Health through
+https://www.providerportal.com. Please contact us for further
+questions or concerns.`,
+      "Procedure Processed Correctly (Request for Particular CPT Code)": `Please be advised that we received records you have submitted
+for the claim XXXXXXXXXXX. As per review, procedure code XXXXX
+has been processed correctly according to the contractual rates
+presently listed in our system for your office. If you still
+disagree with this processing of your claim, please contact
+your provider representative.`,
+      "Recently Processed to Deductible": `Please be advised that we received records you have submitted
+for the claim XXXXXXXXXXX. Please be advised that the claim was
+recently processed dated MM/DD/YYYY and an amount of $00.00
+applied to member deductible. Please get back to us with the
+records if you request for further review or if adjustment is
+needed.`,
+      "Recently Processed to Payment": `Please be advised that we received records you have submitted
+for the claim XXXXXXXXXXX. Upon review, the claim was recently
+processed dated MM/DD/YYYY and paid with an amount of $00.00.
+Please get back to us with the records if you request for
+further review or if adjustment is needed.`,
+      "Records Request": `Please be advised that we received your request. As per review
+from our dedicated department, we need medical records for the
+services billed on your claim. Kindly submit the medical
+records for further processing of the claim.`,
+      "Requesting Referral/Authorization (00182)": `Please be advised that we received your request. As per review
+from our dedicated department, the claim denied requesting for
+Referral/Authorization. Please submit valid and approved
+Referral/Authorization for further process. Please be advised
+that we received your request. As per review from our dedicated
+department, the procedure code XXXXX denied requesting for
+Referral/Authorization. Please submit valid and approved
+Referral/Authorization for further process.`,
+      "SFR Edit": `Please be advised that we received your medical records. As per
+review from our dedicated department, claim was correctly
+denied as servicing facility information is required. If you
+still disagree with this denial, please reach out to your
+provider representative.`,
+      "Services Not Covered (NPAR)": `Please be advised that we received records you have submitted
+for the claim XXXXXXXXXXX. As per review, the claim is denied
+correctly as not a covered expense of the patient's plan. The
+services received from a non-network provider are not covered
+under the member’s plan except for emergency care, or when
+allowed as a result of a Prior Authorization by us. . In order
+to further review the claim, kindly submit a Formal Appeal.`,
+      "Services Not Covered (PAR)": `Please be advised that we received records you have submitted
+for the claim XXXXXXXXXXX. As per review from our dedicated
+department, the claim was denied correctly as not a covered
+expense of the patient's plan. If you still disagree, kindly
+submit a Formal Appeal. kindly submit a Formal Appeal.`,
+      "Timely Filing": `Please be advised that we received records you have submitted
+for the claim XXXXXXXXXXX. As per review, the claim was denied
+correctly for exceeding timely filing limit. The attached
+document is not a valid proof of timely filing. Please provide
+valid proof of timely filing from clearing house and the date
+of acknowledgement at payer or Anthem for further processing of
+the claim.`,
+    };
+
+    function updateComment() {
+      const selected = document.getElementById("letterSelect").value;
+      document.getElementById("commentBox").value = comments[selected] || "";
+    }
+
+    function copyToClipboard() {
+      const textarea = document.getElementById("commentBox");
+      textarea.select();
+      document.execCommand("copy");
+      alert("Comment copied to clipboard!");
+    }
+  </script>
+</body>
+</html>
